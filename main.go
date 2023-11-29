@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/tarm/serial"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/tarm/serial"
 )
 
 func unescapeString(s string) string {
@@ -60,9 +61,9 @@ func main() {
 	failureCounting := 0
 
 	// 실행 횟수 만큼 반복
-	for i := 0; i < totalCounting; i++ {
+	for i := 1; i < totalCounting+1; i++ {
 		// 현재 예상 시퀀스 선택
-		currentSequence := expectedSequence[i%len(expectedSequence)]
+		currentSequence := expectedSequence[(i-1)%len(expectedSequence)]
 
 		buf := make([]byte, 128)
 		// 데이터 수신
@@ -72,20 +73,24 @@ func main() {
 			return
 		}
 
-		// 수신한 데이터를 문자열로 변환
-		receivedData := string(buf[:n])
+		// 수신한 데이터를 문자열로 변환(현재 \r,\n 도 포함되어있기에 -2로 조정)
+		receivedData := string(buf[:n-2])
 
 		// 데이터 비교
 		if receivedData == currentSequence {
 			successCounting++
+			fmt.Printf("trying %v\n", i)
 			fmt.Printf("Success: %v\n", successCounting)
 			fmt.Printf("Expected: %v\n", currentSequence)
 			fmt.Printf("Received: %v\n", receivedData)
+			fmt.Println("")
 		} else {
 			failureCounting++
+			fmt.Printf("trying %v\n", i)
 			fmt.Printf("Failure: %v\n", failureCounting)
 			fmt.Printf("Expected: %v\n", currentSequence)
 			fmt.Printf("Received: %v\n", receivedData)
+			fmt.Println("")
 		}
 	}
 
