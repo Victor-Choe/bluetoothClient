@@ -3,9 +3,25 @@ package main
 import (
 	"fmt"
 	"github.com/tarm/serial"
+	"os"
+	"strconv"
 )
 
 func main() {
+	if len(os.Args) != 2 {
+		fmt.Println("사용법: 프로그램명 실행횟수")
+		return
+	}
+
+	// 실행 횟수 받아오기
+	//totalCountingStr := os.Args[1]
+
+	totalCountingStr := "10"
+	totalCounting, err := strconv.Atoi(totalCountingStr)
+	if err != nil {
+		fmt.Println("실행횟수를 정수로 변환할 수 없습니다.")
+		return
+	}
 	// 시리얼 포트 설정
 	config := &serial.Config{
 		Name: "/dev/ttyTHS1",
@@ -20,7 +36,7 @@ func main() {
 	}
 	defer port.Close()
 
-	// 예상 시나리오
+	// 예상 시퀀스
 	expectedSequence := []string{
 		"On\r\n",
 		"Off\r\n",
@@ -35,8 +51,11 @@ func main() {
 	successCounting := 0
 	failureCounting := 0
 
-	// 토탈 카운팅만큼 반복
-	for counting := 0; counting < len(expectedSequence); counting++ { // 수정: totalCounting 대신 예상 시퀀스 길이 사용
+	// 실행 횟수 만큼 반복
+	for i := 0; i < totalCounting; i++ {
+		// 현재 예상 시퀀스 선택
+		currentSequence := expectedSequence[i%len(expectedSequence)]
+
 		buf := make([]byte, 128)
 		// 데이터 수신
 		n, err := port.Read(buf)
@@ -49,15 +68,15 @@ func main() {
 		receivedData := string(buf[:n])
 
 		// 데이터 비교
-		if receivedData == expectedSequence[counting] {
+		if receivedData == currentSequence {
 			successCounting++
 			fmt.Printf("Success: %v\n", successCounting)
-			fmt.Printf("Expected: %v\n", expectedSequence[counting])
+			fmt.Printf("Expected: %v\n", currentSequence)
 			fmt.Printf("Received: %v\n", receivedData)
 		} else {
 			failureCounting++
 			fmt.Printf("Failure: %v\n", failureCounting)
-			fmt.Printf("Expected: %v\n", expectedSequence[counting])
+			fmt.Printf("Expected: %v\n", currentSequence)
 			fmt.Printf("Received: %v\n", receivedData)
 		}
 	}
