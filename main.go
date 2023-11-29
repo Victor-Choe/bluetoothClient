@@ -5,18 +5,26 @@ import (
 	"github.com/tarm/serial"
 	"os"
 	"strconv"
+	"strings"
 )
 
 func main() {
+	//매개변수로 받기
 	if len(os.Args) != 2 {
 		fmt.Println("사용법: 프로그램명 실행횟수")
 		return
 	}
 
-	// 실행 횟수 받아오기
-	//totalCountingStr := os.Args[1]
+	// 텍스트 파일 읽기
+	data, err := os.ReadFile("scenario.txt") //
+	if err != nil {
+		fmt.Printf("파일 읽기 오류: %v\n", err)
+		return
+	}
+	expectedSequence := strings.Split(string(data), "\n")
 
-	totalCountingStr := "10"
+	// 실행 횟수 받아오기
+	totalCountingStr := os.Args[1]
 	totalCounting, err := strconv.Atoi(totalCountingStr)
 	if err != nil {
 		fmt.Println("실행횟수를 정수로 변환할 수 없습니다.")
@@ -35,18 +43,6 @@ func main() {
 		return
 	}
 	defer port.Close()
-
-	// 예상 시퀀스
-	expectedSequence := []string{
-		"On\r\n",
-		"Off\r\n",
-		"Forward\r\n",
-		"Backward\r\n",
-		"Left\r\n",
-		"Right\r\n",
-		"Center\r\n",
-		"Stop\r\n",
-	}
 
 	successCounting := 0
 	failureCounting := 0
