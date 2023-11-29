@@ -1,8 +1,8 @@
-"On\r\n",
-"Off\r\n",
-"Forward\r\n",
-"Backward\r\n",
-"Left\r\n",
-"Right\r\n",
-"Center\r\n",
-"Stop\r\n",
+On\\r\\n
+Off\\r\\n
+Forward\\r\\n
+Backward\\r\\n
+Left\\r\\n
+Right\\r\\n
+Center\\r\\n
+Stop\\r\\n
