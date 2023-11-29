@@ -8,6 +8,13 @@ import (
 	"strings"
 )
 
+func unescapeString(s string) string {
+	s = strings.Replace(s, "\\r", "\r", -1)
+	s = strings.Replace(s, "\\n", "\n", -1)
+	s = strings.Replace(s, "\\t", "\t", -1)
+	return s
+}
+
 func main() {
 	//매개변수로 받기
 	if len(os.Args) != 2 {
@@ -21,7 +28,12 @@ func main() {
 		fmt.Printf("파일 읽기 오류: %v\n", err)
 		return
 	}
-	expectedSequence := strings.Split(string(data), "\n")
+	//파싱
+	lines := strings.Split(string(data), "\n")
+	expectedSequence := make([]string, len(lines))
+	for i, line := range lines {
+		expectedSequence[i] = unescapeString(line)
+	}
 
 	// 실행 횟수 받아오기
 	totalCountingStr := os.Args[1]
